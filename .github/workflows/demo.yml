@@ -9,6 +9,12 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      - name: Cache dependencies #la acción de cacheo se pone antes que se cachee, en este caso la instalación de dependencias.
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm #este es el path donde npm cachea las dependencias
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json')}}
+          #creamos una clave que contiene un hash de package-lock.json, si este cambia su contenido, cambia el hash y por tanto la key, y eso indica que obviamente el caché almacenado ya no vale (porque packages-lock ha cambiado y por tanto hay que volver a reinstalar las dependencias)
       - name: Install dependencies
         run: npm ci
       - name: Lint code
@@ -23,6 +29,11 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      - name: Cache dependencies #la acción de cacheo se pone antes que se cachee, en este caso la instalación de dependencias.
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm #aunque tengamos que repetir el comando, se usa la misma caché de antes
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json')}}
       - name: Install dependencies
         run: npm ci
       - name: Build website
